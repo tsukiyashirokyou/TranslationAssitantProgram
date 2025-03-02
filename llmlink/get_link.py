@@ -106,13 +106,16 @@ def translate_segment(segment,glossary,segment_before=''):
     return response.choices[0].message.content
 
 def translate_txt(txt_path,max_chars,glossary_path=None,output_path=None):
+    txt_path = Path(txt_path)
+    txt_stem = txt_path.stem
+
     if output_path is None:
-        output_path = Path(__file__).parent.parent / 'translated.txt'
+        output_path = Path(__file__).parent.parent / (txt_stem + '_translated.txt')
     if glossary_path is None:
-        glossary_path = Path(__file__).parent.parent / 'glossary.txt'
+        glossary_path = Path(__file__).parent.parent / (txt_stem +'_glossary.txt')
     else:
         glossary_path = Path(glossary_path)
-    txt_path = Path(txt_path)
+
     segments = split_text(txt_path,max_chars)
     glossary = load_translation_glossary(glossary_path)
 
@@ -121,6 +124,7 @@ def translate_txt(txt_path,max_chars,glossary_path=None,output_path=None):
     translated_segments = []
     segment_before = ''#参考用的前文
 
+    print('开始翻译')
     for idx, segment in enumerate(segments):
         result = translate_segment(segment, updated_glossary,segment_before)
         translated_result,glossary_result = separate_translation_and_glossary(result)
