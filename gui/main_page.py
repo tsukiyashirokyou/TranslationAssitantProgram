@@ -2,6 +2,7 @@ import ttkbootstrap as ttk
 from ttkbootstrap.constants import *
 from . import llm_page
 from . import  translation_and_setting_page
+from . import assistant_page
 def gui_show():
         root = ttk.Window(
                 title="大模型与翻译和嵌入辅助程序",        #设置窗口的标题
@@ -20,5 +21,7 @@ def gui_show():
         notebook = ttk.Notebook(frame)
         notebook.pack(side=TOP, fill=BOTH, expand=YES,padx=5,pady=5)
         notebook.add(llm_page.get_frame(notebook),text='大模型页面',sticky=NSEW)
-        notebook.add(translation_and_setting_page.get_frame(notebook),text='翻译辅助页面',sticky=NSEW)
+        notebook.add(translation_and_setting_page.get_frame(notebook),text='翻译和设置页面',sticky=NSEW)
+        notebook.add(assistant_page.get_frame(notebook), text='翻译辅助页面', sticky=NSEW)
+
         root.mainloop()
