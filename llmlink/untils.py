@@ -17,13 +17,13 @@ def split_text(text_path, max_chars=2000):
             text = f.read()
     else:
         text=''
-    paragraphs = text.split('\n\n')
+    paragraphs = text.split('\n')
     segments = []
     current_segment = ""
     for paragraph in paragraphs:
         # 如果当前段落能加入当前分段且不超出最大字符数
         if len(current_segment) + len(paragraph) + 2 <= max_chars:
-            current_segment += paragraph + "\n\n"
+            current_segment += paragraph + "\n"
         else:
             # 当前段落太大，先保存已有段落
             if current_segment:
@@ -34,7 +34,7 @@ def split_text(text_path, max_chars=2000):
                     segments.append(paragraph[i:i+max_chars])
                 current_segment = ""
             else:
-                current_segment = paragraph + "\n\n"
+                current_segment = paragraph + "\n"
     if current_segment:
         segments.append(current_segment.strip())
     return segments

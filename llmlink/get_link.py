@@ -70,27 +70,67 @@ def translate_segment(segment,glossary,segment_before=''):
 
     #构造提交字典
     glossary_text = "\n".join([f"{k} : {v}" for k, v in glossary.items()]) #构造对照表文本
+
     # 构造提示：
     prompt = (
-        "请将下面的文本中的日文部分翻译成中文，要求仅输出翻译后的文本，"
-        "严格保留原文格式（包括换行、空格等）。\n"
-        "请同时检查文本中的专有名词（如人名、地名），并维护一个翻译对照表。"
-        "如果发现新的专有名词翻译，请在翻译完成后，输出一个 JSON 格式的 'Glossary Updates' 部分，"
-        "格式为：\n"
-        '{"Glossary Updates": [{"original": "原词", "translation": "译词"}, ...]}\n\n'
-        "在输出'Glossary Updates' 部分之前，你需要输出'===GLOSSARY_UPDATES==='在翻译文本和它之间，作为分隔符"
-        "请不要输出我给你的,除了待翻译文本的翻译之外的内容！"
-        "【翻译对照表】\n"
+        "【任务指令】\n"
+        "1. 请精准识别<JA></JA>标记内的日文内容进行翻译,记住所有内容都不论如何必须要翻译\n"
+        "2. 输出格式必须严格遵循：\n"
+        "   - 翻译后的中文（保留所有原始格式）\n"
+        "   - 标签中的内容，和判断是否翻译的原因\n"
+        "   - 分隔符 ===GLOSSARY_UPDATES===\n"
+        "   - 新增术语的JSON列表（若无更新则省略该部分）\n\n"
+
+        "【处理规则】\n"
+        "• 格式保留：完全保留换行符、空格、标点及特殊符号\n"
+        "• 术语处理：\n"
+        "   a) 优先使用现有对照表（见下方）\n"
+        "   b) 新术语需经上下文验证后添加\n"
+        "   c) 请勿输出待翻译文本和术语词典之外的内容\n"
+        "   d) 人名/地名需符合官方译名规范\n\n"
+
+        "【术语禁区】\n"
+        "以下术语禁止修改（已确认翻译）：\n"
         f"{glossary_text}\n\n"
-        '【参考语境用的上文,不需要翻译】\n'
-        f"{segment_before}"
-        "【待翻译文本】\n"
-        f"{segment}"
+
+        "【上下文参考】\n"
+        "上文内容（仅辅助理解，无需处理）：\n"
+        f"{segment_before}\n\n"
+
+        "【待译内容】\n"
+        "<JA>\n"
+        f"{segment}\n"
+        "</JA>\n\n"
+
+        "【输出示例】\n"
+        " Translated text here...\n"
+        "保持相同的换行格式\n\n"
+        "===GLOSSARY_UPDATES===\n"
+        '{"Glossary Updates": [{"original": "東京", "translation": "东京"}]}'
     )
+    system_prompt = (
+        "你是一个严谨的本地化专家，专门处理中日文档翻译。"
+        "你的核心能力：\n"
+        "1. 精准识别需要翻译的片段\n"
+        "2. 绝对保留原始排版格式\n"
+        "3. 专业术语的一致性管理\n"
+        "4. 只输出待翻译文本和术语词典\n"
+        "5. 严格遵守输出格式要求\n\n"
+
+        "禁止行为：\n"
+        "- 添加任何解释性内容\n"
+        "- 修改未标记的文本\n"
+        "- 自行发明新的翻译格式\n"
+        "- <JA></JA>标记内有日语部分没有被翻译,即使它是敬语等需要考虑上下文环境的内容\n"
+        "- 翻译任何非<JA></JA>标签内的部分，包括标签本身\n"
+        "- 输出非请求的额外信息"
+    )
+
     messages = [
-        {"role": "system", "content": "你是一名专业的翻译专家，请严格按照要求翻译文本，并在翻译完成后提供对照表更新。"},
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": prompt}
     ]
+
     response = client.chat.completions.create(
       model=globals.link_settings['model'],
       messages=messages,
@@ -144,7 +184,8 @@ def translate_txt(txt_path,max_chars,glossary_path=None,output_path=None):
     output_path = Path(output_path)
     with output_path.open('w',encoding="utf-8") as f:
         for seg in translated_segments:
-            f.write(seg + "\n\n")
+            #f.write(seg + "\n\n")
+            f.write(seg)
     # 保存更新后的对照表到 glossary.txt 文件中
     with glossary_path.open('w',encoding="utf-8") as f:
         for k, v in updated_glossary.items():

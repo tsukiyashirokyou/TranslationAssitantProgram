@@ -55,6 +55,7 @@ def get_frame(notebook):
                                   command=lambda: load_button_action(
                                     original_txt_label=original_text_path_label,
                                     translated_txt_label=translation_path_label,
+                                    notebook=notebook,
                                   )
                              )
     load_button.grid(row=6, column=0, sticky=EW, columnspan=2, padx=5, pady=5)

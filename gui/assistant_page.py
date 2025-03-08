@@ -34,7 +34,7 @@ def get_frame(notebook):
     if globals.history_list == None:
         untils.reset_scrooled_text(original_scrolled_text,'未载入原文')
     elif len(globals.history_list) > 1:
-        untils.reset_scrooled_text(original_scrolled_text,history_list[int(history_list[0])])
+        untils.reset_scrooled_text(original_scrolled_text,globals.history_list[int(globals.history_list[0])])
 
 
 
@@ -44,7 +44,7 @@ def get_frame(notebook):
     if globals.translated_list == None:
         untils.reset_scrooled_text(translated_scrolled_text,'未载入译文')
     elif len(globals.translated_list) > 1:
-        untils.reset_scrooled_text(translated_scrolled_text,translated_list[int(translated_list[0])])
+        untils.reset_scrooled_text(translated_scrolled_text,globals.translated_list[int(globals.translated_list[0])])
 
     translated_text_label.grid(row=1, column=0, sticky=EW, padx=5, pady=5)
     translated_scrolled_text.grid(row=1, column=1, sticky=EW, padx=5, pady=5,columnspan=2)

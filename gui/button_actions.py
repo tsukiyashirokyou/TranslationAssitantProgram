@@ -50,8 +50,8 @@ def translate_button_action(txt_label,glossary_label,output_label,max_chars=glob
     )
     thread.start()
 
-def load_button_action(original_txt_label,translated_txt_label):
-
+def load_button_action(original_txt_label,translated_txt_label,notebook):
+    from .assistant_page import get_frame
     if original_txt_label.cget('text') != '请选择原文':
         debug()
         globals.current_original_path = Path(original_txt_label.cget('text'))
@@ -60,6 +60,9 @@ def load_button_action(original_txt_label,translated_txt_label):
         debug()
         globals.current_translated_path = Path(translated_txt_label.cget('text'))
         globals.translated_list = load_translated_history()
+
+    notebook.forget(2)
+    notebook.add(get_frame(notebook), text='翻译辅助页面', sticky=NSEW)
 
 
 

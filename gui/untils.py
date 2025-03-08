@@ -30,9 +30,8 @@ def load_original_history():
         #如果不存在历史则创建历史
         with history_origin_path.open('w', encoding='utf-8') as json_file:
             with globals.current_original_path.open('r', encoding='utf-8') as txt_file:
-                print(globals.current_original_path)
                 history_list = txt_file.read().splitlines()
-                history_list.insert(0, '0')
+                history_list.insert(0, '1')
                 json.dump(history_list, json_file, indent=4)
                 
     return history_list
@@ -58,7 +57,7 @@ def load_translated_history():
         with history_translated_path.open('w', encoding='utf-8') as json_file:
             with globals.current_translated_path.open('r', encoding='utf-8') as txt_file:
                 history_list = txt_file.read().splitlines()
-                history_list.insert(0, '0')
+                history_list.insert(0, '1')
                 json.dump(history_list, json_file, indent=4)
 
     return history_list

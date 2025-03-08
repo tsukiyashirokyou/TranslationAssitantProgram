@@ -19,6 +19,7 @@ def gui_show():
         frame.pack(fill=BOTH,padx=5,pady=5,side=TOP,expand=True)
 
         notebook = ttk.Notebook(frame)
+
         notebook.pack(side=TOP, fill=BOTH, expand=YES,padx=5,pady=5)
         notebook.add(llm_page.get_frame(notebook),text='大模型页面',sticky=NSEW)
         notebook.add(translation_and_setting_page.get_frame(notebook),text='翻译和设置页面',sticky=NSEW)
