@@ -74,10 +74,9 @@ def translate_segment(segment,glossary,segment_before=''):
     # 构造提示：
     prompt = (
         "【任务指令】\n"
-        "1. 请精准识别<JA></JA>标记内的日文内容进行翻译,记住所有内容都不论如何必须要翻译\n"
+        "1. 请精准识别<JA></JA>标记内的日文内容进行翻译\n"
         "2. 输出格式必须严格遵循：\n"
         "   - 翻译后的中文（保留所有原始格式）\n"
-        "   - 标签中的内容，和判断是否翻译的原因\n"
         "   - 分隔符 ===GLOSSARY_UPDATES===\n"
         "   - 新增术语的JSON列表（若无更新则省略该部分）\n\n"
 
@@ -145,7 +144,7 @@ def translate_segment(segment,glossary,segment_before=''):
 
     return response.choices[0].message.content
 
-def translate_txt(txt_path,max_chars,glossary_path=None,output_path=None):
+def translate_txt(txt_path,max_chars,progress_bar,glossary_path=None,output_path=None):
     txt_path = Path(txt_path)
     txt_stem = txt_path.stem
 
@@ -159,6 +158,8 @@ def translate_txt(txt_path,max_chars,glossary_path=None,output_path=None):
     segments = split_text(txt_path,max_chars)
     glossary = load_translation_glossary(glossary_path)
 
+    segements_num = len(segments)
+
     # 复制一份对照表用于更新
     updated_glossary = glossary.copy()
     translated_segments = []
@@ -171,6 +172,8 @@ def translate_txt(txt_path,max_chars,glossary_path=None,output_path=None):
 
         translation_text = translated_result  # 此处直接使用返回内容
         updates = parse_glossary_update(glossary_result)
+
+        progress_bar.step(100/segements_num)
 
         # 更新本地对照表：新增或修改已有条目
         for entry in updates:

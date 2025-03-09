@@ -39,12 +39,14 @@ def select_directory(label):
     if path:
         label.configure(text=path)
 
-def translate_button_action(txt_label,glossary_label,output_label,max_chars=globals.max_chars):
+def translate_button_action(txt_label,glossary_label,output_label,progress_bar,max_chars=globals.max_chars):
     if txt_label.cget('text')=='请选择待翻译文件':
         show_dialog_fail('你没有选择待翻译文件！')
         return False
 
-    thread = threading.Thread(target=lambda:translate_txt(txt_label.cget('text'),max_chars=globals.max_chars,
+    thread = threading.Thread(target=lambda:translate_txt(txt_label.cget('text'),
+                                                          max_chars=globals.max_chars,
+                                                          progress_bar = progress_bar,
                   glossary_path=None if glossary_label.cget('text')=="请选择待字典文件(可不选),不选默认生成在项目目录下" else glossary_label.cget('text'),
                   output_path=None if output_label.cget('text')=="输出翻译路径(可不选),不选默认生成在项目目录下" else output_label.cget('text'))
     )
