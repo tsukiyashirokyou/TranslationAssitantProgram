@@ -15,52 +15,105 @@ def load_original_history():
     #没有载入原文返回空
     if globals.current_original_path =='':
         return None
-    #如果载入了文件，则尝试加载历史
-    stem = globals.current_original_path.stem
-
-    history_origin_path = Path(__file__).parent.parent / 'translate_history' /(stem+'_origin_history.json')
-    
-    history_list = []
-    
-    if history_origin_path.exists():
-        # 如果存在历史,则返回历史
-        with history_origin_path.open('r', encoding='utf-8') as f:
-            history_list = json.load(f)
     else:
-        #如果不存在历史则创建历史
-        with history_origin_path.open('w', encoding='utf-8') as json_file:
-            with globals.current_original_path.open('r', encoding='utf-8') as txt_file:
-                history_list = txt_file.read().splitlines()
-                history_list.insert(0, '1')
-                json.dump(history_list, json_file, indent=4)
-                
-    return history_list
+        #如果载入了文件，则尝试加载历史
+        stem = globals.current_original_path.stem
+
+        history_origin_path = Path(__file__).parent.parent / 'translate_history' /(stem+'_origin_history.json')
+
+        history_list = []
+
+        if history_origin_path.exists():
+            # 如果存在历史,则返回历史
+            with history_origin_path.open('r', encoding='utf-8') as f:
+                history_list = json.load(f)
+        else:
+            #如果不存在历史则创建历史
+            with history_origin_path.open('w', encoding='utf-8') as json_file:
+                with globals.current_original_path.open('r', encoding='utf-8') as txt_file:
+                    history_list = txt_file.read().splitlines()
+                    history_list.insert(0, '1')
+                    json.dump(history_list, json_file, indent=4)
+
+        return history_list
 
 #载入参考译文历史
 def load_translated_history():
     # 没有载入原文返回空
     if globals.current_translated_path == '':
-        return None
-    # 如果载入了文件，则尝试加载历史
-    stem = globals.current_translated_path.stem
-
-    history_translated_path = Path(__file__).parent.parent / 'translate_history' / (stem + '_translated_history.json')
-
-    history_list = []
-
-    if history_translated_path.exists():
-        # 如果存在历史,则返回历史
-        with history_translated_path.open('r', encoding='utf-8') as f:
-            history_list = json.load(f)
+        if globals.current_original_path != '':
+            stem = globals.current_original_path.stem
+            json_path = Path(__file__).parent.parent / 'translate_history' / (stem + '_translated_history.json')
+            if json_path.exists():
+                with json_path.open('r', encoding='utf-8') as f:
+                    history_list = json.load(f)
+                    globals.current_translated_path =Path(__file__).parent.parent / (stem + '_translated.txt')
+                    return history_list
+            else:
+                return None
+        else:
+            return None
     else:
-        # 如果不存在历史则创建历史
-        with history_translated_path.open('w', encoding='utf-8') as json_file:
-            with globals.current_translated_path.open('r', encoding='utf-8') as txt_file:
-                history_list = txt_file.read().splitlines()
-                history_list.insert(0, '1')
-                json.dump(history_list, json_file, indent=4)
+        # 如果载入了文件，则尝试加载历史
+        stem = globals.current_translated_path.stem
 
-    return history_list
+        history_translated_path = Path(__file__).parent.parent / 'translate_history' / (stem + '_history.json')
+
+        history_list = []
+
+        if history_translated_path.exists():
+            # 如果存在历史,则返回历史
+            with history_translated_path.open('r', encoding='utf-8') as f:
+                history_list = json.load(f)
+        else:
+            # 如果不存在历史则创建历史
+            with history_translated_path.open('w', encoding='utf-8') as json_file:
+                with globals.current_translated_path.open('r', encoding='utf-8') as txt_file:
+                    history_list = txt_file.read().splitlines()
+                    history_list.insert(0, '1')
+                    json.dump(history_list, json_file, indent=4)
+
+        return history_list
+
+#载入翻译记录
+def load_current_history():
+    # 没有载入原文返回空
+    if globals.current_txt_path == '':
+        if globals.current_original_path =='':
+            return None
+        else:
+            stem = globals.current_original_path.stem
+            history_translated_path = Path(__file__).parent.parent / 'translate_history' / (
+                        stem + '_your_translated_history.json')
+            if history_translated_path.exists():
+                # 如果存在历史,则返回历史
+                with history_translated_path.open('r', encoding='utf-8') as f:
+                    history_list = json.load(f)
+                    return history_list
+            else:
+                return None
+    else:
+        # 如果载入了文件，则尝试加载历史
+        stem = globals.current_txt_path.stem
+
+        history_translated_path = Path(__file__).parent.parent / 'translate_history' / (stem + '.json')
+        print(history_translated_path)
+
+        history_list = []
+
+        if history_translated_path.exists():
+            # 如果存在历史,则返回历史
+            with history_translated_path.open('r', encoding='utf-8') as f:
+                history_list = json.load(f)
+        else:
+            # 如果不存在历史则创建历史
+            with history_translated_path.open('w', encoding='utf-8') as json_file:
+                with globals.current_txt_path.open('r', encoding='utf-8') as txt_file:
+                    history_list = txt_file.read().splitlines()
+                    history_list.insert(0, '1')
+                    json.dump(history_list, json_file, indent=4)
+
+        return history_list
 
 def show_dialog_success(str):
     # 显示确认对话框
@@ -85,7 +138,19 @@ def show_dialog_fail(str):
 def debug():
     print('debug!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
-
+#跳过空白行
+def skip_space(list):
+    if list == None:
+        return False
+    pos = int(list[0])
+    if pos <= len(list) - 1:
+        if list[pos].strip() == '':
+            list[0] = str(pos + 1)
+            skip_space(list)
+        else:
+            return True
+    else:
+        return True
 
 
 

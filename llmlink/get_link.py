@@ -187,7 +187,6 @@ def translate_txt(txt_path,max_chars,progress_bar,glossary_path=None,output_path
     output_path = Path(output_path)
     with output_path.open('w',encoding="utf-8") as f:
         for seg in translated_segments:
-            #f.write(seg + "\n\n")
             f.write(seg)
     # 保存更新后的对照表到 glossary.txt 文件中
     with glossary_path.open('w',encoding="utf-8") as f:

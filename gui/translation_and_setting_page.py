@@ -58,15 +58,22 @@ def get_frame(notebook):
 
     translation_path_button.grid(row=6, column=0,sticky=EW,padx=5,pady=5)
     translation_path_label.grid(row=6, column=1,sticky=EW,padx=5,pady=5)
+    
+    translation_output_path_label = ttk.Label(frame, text="请选择翻译辅助功能的写入文件(不选默认生成在程序目录下)",padding=5,anchor=CENTER)
+    translation_output_path_button = ttk.Button(frame,text='选择',command=lambda:select_directory(translation_output_path_label),padding=5)
+
+    translation_output_path_button.grid(row=7, column=0,sticky=EW,padx=5,pady=5)
+    translation_output_path_label.grid(row=7, column=1,sticky=EW,padx=5,pady=5)
 
     load_button = ttk.Button(frame, text='载入',
                                   command=lambda: load_button_action(
                                     original_txt_label=original_text_path_label,
                                     translated_txt_label=translation_path_label,
+                                    translation_output_path_label = translation_output_path_label,
                                     notebook=notebook,
                                   )
                              )
-    load_button.grid(row=7, column=0, sticky=EW, columnspan=2, padx=5, pady=5)
+    load_button.grid(row=8, column=0, sticky=EW, columnspan=2, padx=5, pady=5)
 
 
 

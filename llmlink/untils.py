@@ -84,3 +84,5 @@ def separate_translation_and_glossary(response_text):
         glossary_text = ""
     return translation_text.strip(), glossary_text.strip()
 
+
+
